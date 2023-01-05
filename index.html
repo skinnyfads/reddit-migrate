@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reddit Migrate</title>
+  </head>
+  <body>
+    <h1>Reddit Migrate</h1>
+    <script>
+      {
+        const permissions = ["mysubreddits"];
+        const clientId = "iNSJFqFpea2nkcGFkGQwEQ";
+        const randomString = btoa(Math.random());
+        const redirectUri = location.href + "migrate.html";
+        const authorizationUrl = `https://www.reddit.com/api/v1/authorize?client_id=${clientId}&response_type=token&state=${randomString}&redirect_uri=${redirectUri}&scope=${permissions.join(
+          " "
+        )}`;
+
+        const authLinkElement = document.createElement("a");
+        authLinkElement.href = authorizationUrl;
+        authLinkElement.innerText = "Auth link";
+
+        document.body.append(authLinkElement);
+      }
+    </script>
+  </body>
+</html>

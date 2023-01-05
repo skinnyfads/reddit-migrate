@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reddit Migrate</title>
+  </head>
+  <body>
+    <section id="logged-in-section">
+      <h1>Migrate</h1>
+      <p id="access-token-viewer"></p>
+    </section>
+    <section id="logged-out-section">
+      <span>You are currently not <a href="/">logged in</a></span>
+    </section>
+    <script>
+      {
+        const accessTokenViewer = document.getElementById("access-token-viewer");
+        const response = new URLSearchParams(location.hash.substring(1));
+        const accessToken = response.get("access_token") || sessionStorage.accessToken;
+
+        if (location.hash) {
+          location.replace("/migrate.html");
+        }
+        if (accessToken) {
+          document.getElementById("logged-out-section").remove();
+          accessTokenViewer.innerText = "Here is your access token: " + accessToken;
+          sessionStorage.accessToken = accessToken;
+        } else {
+          document.getElementById("logged-in-section").remove();
+          accessTokenViewer.innerText = "You currently not logged in";
+        }
+      }
+    </script>
+  </body>
+</html>

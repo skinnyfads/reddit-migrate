@@ -9,14 +9,13 @@
   <body>
     <section id="logged-in-section">
       <h1>Migrate</h1>
-      <p id="access-token-viewer"></p>
+      <button id="get-subreddits-button">Get List of Subreddits</button>
     </section>
     <section id="logged-out-section">
       <span>You are currently not <a href="/">logged in</a></span>
     </section>
     <script>
       {
-        const accessTokenViewer = document.getElementById("access-token-viewer");
         const response = new URLSearchParams(location.hash.substring(1));
         const accessToken = response.get("access_token") || sessionStorage.accessToken;
 
@@ -25,11 +24,42 @@
         }
         if (accessToken) {
           document.getElementById("logged-out-section").remove();
-          accessTokenViewer.innerText = "Here is your access token: " + accessToken;
           sessionStorage.accessToken = accessToken;
+
+          const baseOAuthUrl = "https://oauth.reddit.com";
+          const getSubredditsButton = document.getElementById("get-subreddits-button");
+
+          getSubredditsButton.onclick = () => {
+            const loggedInSectionElement = document.getElementById("logged-in-section");
+            const subredditListElement = document.createElement("div");
+
+            loggedInSectionElement.append(subredditListElement);
+            subredditListElement.innerText = "Fetching all of your subreddits...";
+
+            fetch(baseOAuthUrl + "/subreddits/mine/subscriber?limit=100", {
+              headers: {
+                Authorization: "bearer " + accessToken,
+              },
+            })
+              .then((res) => res.json())
+              .then((resJson) => {
+                subredditListElement.innerText = "";
+
+                resJson.data.children.map((subreddit) => {
+                  const subredditData = subreddit.data;
+
+                  subredditListElement.innerHTML += `
+                    <div class="subreddit-item">
+                      <h4 class="subreddit-title">${subredditData.title}</h4>
+                      <img class="subreddit-picture" src="${subredditData.icon_img}">
+                      <span class="subreddit-total-subscribers">${subredditData.subscribers}</span>
+                      <a class="subreddit-url" href="https://reddit.com${subredditData.url}">${subredditData.url}</a>
+                    </div>`;
+                });
+              });
+          };
         } else {
           document.getElementById("logged-in-section").remove();
-          accessTokenViewer.innerText = "You currently not logged in";
         }
       }
     </script>
